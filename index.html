@@ -4,16 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>Motores</title>
-<meta name="theme-color" content="#BFB800">
+<meta name="theme-color" content="#DFD1A7">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <style>
-:root{--bg:#F4F1EA;--card:#fff;--ink:#1F1C19;--ink2:#4A433C;--mut:#696158;--line:#E2DCD0;--line2:#F1ECE2;--brown:#3B2A1E;
+:root{--page:#DFD1A7;--bg:#F4F1EA;--card:#fff;--ink:#1F1C19;--ink2:#4A433C;--mut:#696158;--line:#E2DCD0;--line2:#F1ECE2;--brown:#3B2A1E;
 --or:#EA7600;--or-bg:#FCE9D4;--or-ink:#7A3E00;--or-dk:#9A4A00;--gr:#BFB800;--gr-ink:#4A4500;--gr-bg:#EEF0C8;--beige:#DFD1A7;
 --mono:"Roboto Mono",Consolas,Menlo,monospace;--sans:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;-webkit-text-size-adjust:100%}
+html,body{margin:0;background:var(--page);color:var(--ink);font-family:var(--sans);font-size:16px;-webkit-text-size-adjust:100%}
 button,input,select{font-family:inherit;font-size:17px}
 a{color:inherit;text-decoration:none}
 .sr{position:absolute;left:-9999px}
@@ -329,7 +329,7 @@ var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, f
 var fold = function (s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase(); };
 var nrm = function (s) { return fold(s).replace(/[^A-Z0-9]/g, ''); };
 var cap = function (s) { s = String(s || '').toLowerCase().replace(/-/g, ' '); s = s.replace(/\b(vdf|abb|mt|dcs|ssl|ot|tesys|nu)\b/gi, function (w) { return w.toUpperCase(); }).replace(/\bcentrifuga\b/i, 'centrífuga').replace(/\bvacio\b/i, 'vacío').replace(/\bgrua\b/i, 'grúa').replace(/\blubricacion\b/i, 'lubricación').replace(/\belectrica\b/i, 'eléctrica').replace(/\brele\b/i, 'relé').replace(/\b(vacon|siemens|multilin)\b/gi, function (w) { return w.charAt(0).toUpperCase() + w.slice(1); }); return s.charAt(0).toUpperCase() + s.slice(1); };
-var VERSION = '1.5';
+var VERSION = '1.6';
 var CFG = { url: '', key: '', nombre: '' };
 try { CFG.url = localStorage.getItem('mt_url') || ''; CFG.key = localStorage.getItem('mt_key') || ''; CFG.nombre = localStorage.getItem('mt_nombre') || ''; } catch (e) {}
 function run(fn) {
