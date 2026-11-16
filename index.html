@@ -329,7 +329,7 @@ var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, f
 var fold = function (s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase(); };
 var nrm = function (s) { return fold(s).replace(/[^A-Z0-9]/g, ''); };
 var cap = function (s) { s = String(s || '').toLowerCase().replace(/-/g, ' '); s = s.replace(/\b(vdf|abb|mt|dcs|ssl|ot|tesys|nu)\b/gi, function (w) { return w.toUpperCase(); }).replace(/\bcentrifuga\b/i, 'centrífuga').replace(/\bvacio\b/i, 'vacío').replace(/\bgrua\b/i, 'grúa').replace(/\blubricacion\b/i, 'lubricación').replace(/\belectrica\b/i, 'eléctrica').replace(/\brele\b/i, 'relé').replace(/\b(vacon|siemens|multilin)\b/gi, function (w) { return w.charAt(0).toUpperCase() + w.slice(1); }); return s.charAt(0).toUpperCase() + s.slice(1); };
-var VERSION = '1.7';
+var VERSION = '1.8';
 var CFG = { url: '', key: '', nombre: '' };
 try { CFG.url = localStorage.getItem('mt_url') || ''; CFG.key = localStorage.getItem('mt_key') || ''; CFG.nombre = localStorage.getItem('mt_nombre') || ''; } catch (e) {}
 function run(fn) {
@@ -343,6 +343,7 @@ function run(fn) {
 }
 function toast(t) { var e = $('#toast'); e.textContent = t; e.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(function () { e.classList.remove('on'); }, 2800); }
 function online(ok, txt) { var e = $('#online'); e.classList.toggle('off', !ok); e.querySelector('span').textContent = txt; }
+document.addEventListener('click', function (ev) { if (ev.target.closest('#online') && S.m && !S.cargando) { toast('Actualizando datos de rutas, termografía y cambios…'); cargar(S.m.tag, 'none', true); } });
 function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
 function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
 function errMsg(e) { return (e && e.message) ? e.message : String(e); }
@@ -413,13 +414,14 @@ function mostrarMotor(m, how) {
   try { if (how === 'push') history.pushState({ tag: m.tag, page: S.page }, ''); else if (how === 'replace') history.replaceState({ tag: m.tag, page: S.page }, ''); } catch (e) {}
   render();
 }
-function cargar(tag, how) {
+function cargar(tag, how, forzar) {
   how = how || 'push';
   S.cargando = true; $('#q').value = tag;
   var cm = motorCache(tag);
-  if (cm) mostrarMotor(cm, how);
+  if (cm) { mostrarMotor(cm, how); online(true, 'Actualizando…'); }
   else $('#view').innerHTML = '<div class="skel"></div><div class="skel" style="height:200px"></div>';
-  return run('getMotor', tag).then(function (m) {
+  return run('getMotor', tag, !!forzar).then(function (m) {
+    if (m && m._ms) S.ms = m._ms;
     S.cargando = false;
     if (!m.registros.length) { S.m = null; $('#view').innerHTML = '<div class="card empty">No existe el TAG <b>' + esc(tag) + '</b> en la hoja MOTORES.</div>'; navState(); return; }
     guardarCache(m); if (S.idx.length) online(true, 'En línea · ' + S.idx.length);
@@ -1133,7 +1135,8 @@ $('#cbtn').addEventListener('click', function () {
 });
 $('#cfgb').addEventListener('click', function () {
   var api = CFG.url ? CFG.url.replace(/^https:\/\/script\.google\.com\/macros\/s\//, '').slice(0, 10) + '…' : 'vista previa';
-  $('#ajSub').textContent = 'versión ' + VERSION;
+  var ms = S.ms, sg = function (x) { return (x / 1000).toFixed(1).replace('.', ','); };
+  $('#ajSub').textContent = 'versión ' + VERSION + (ms ? ' · última carga ' + sg(ms.total) + ' s (rutas ' + sg(ms.rutas) + ', termografía ' + sg(ms.termo) + ', cambios ' + sg(ms.cambios) + ')' : '');
   $('#ajBody').innerHTML = '<p class="sub" style="margin:10px 2px">Conectado a la API <b>' + esc(api) + '</b> · los cambios se registran como <b>' + esc(CFG.nombre || '—') + '</b></p>' +
     '<button class="ajb" type="button" data-aj="setup">Cambiar URL, clave o nombre</button>' +
     '<button class="ajb" type="button" data-aj="recargar">Recargar la app</button>' +

@@ -1,7 +1,7 @@
 // Service worker de Motores: permite instalar la app y abrirla sin señal.
 // La página se pide primero a la red (así siempre llega la última versión) y, si no hay señal, se usa la copia guardada.
 // Íconos, estilos y fuentes se sirven desde la copia guardada. Los pedidos a la API nunca se guardan.
-const CACHE = 'motores-v3';
+const CACHE = 'motores-v4';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png'];
 const EXTRA = [];
 
