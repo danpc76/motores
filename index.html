@@ -329,7 +329,7 @@ var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, f
 var fold = function (s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase(); };
 var nrm = function (s) { return fold(s).replace(/[^A-Z0-9]/g, ''); };
 var cap = function (s) { s = String(s || '').toLowerCase().replace(/-/g, ' '); s = s.replace(/\b(vdf|abb|mt|dcs|ssl|ot|tesys|nu)\b/gi, function (w) { return w.toUpperCase(); }).replace(/\bcentrifuga\b/i, 'centrífuga').replace(/\bvacio\b/i, 'vacío').replace(/\bgrua\b/i, 'grúa').replace(/\blubricacion\b/i, 'lubricación').replace(/\belectrica\b/i, 'eléctrica').replace(/\brele\b/i, 'relé').replace(/\b(vacon|siemens|multilin)\b/gi, function (w) { return w.charAt(0).toUpperCase() + w.slice(1); }); return s.charAt(0).toUpperCase() + s.slice(1); };
-var VERSION = '1.8';
+var VERSION = '1.9';
 var CFG = { url: '', key: '', nombre: '' };
 try { CFG.url = localStorage.getItem('mt_url') || ''; CFG.key = localStorage.getItem('mt_key') || ''; CFG.nombre = localStorage.getItem('mt_nombre') || ''; } catch (e) {}
 function run(fn) {
@@ -923,7 +923,7 @@ function ubic() {
   if (hasVdf) c += '<div class="c-vdf"><span class="k">' + (/SUAVE/i.test(r.PARTIDA) ? 'P. SUAVE' : 'VDF') + '</span><span class="v">' + vdf + '</span></div>';
   c += '<div class="c-mot"><span class="k">MOTOR</span><span class="v" style="font-size:17px">' + esc(r.TAG) + '</span><span class="x" style="color:#4A433C">' + esc(r.UBI || '') + '</span></div></div>';
   h += '<div class="card"><div class="sec">CADENA DE ALIMENTACIÓN · PUNTOS DE BLOQUEO</div>' + c +
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;margin-top:8px;padding-top:8px;border-top:1px solid #E6E0D4">' + F(r, 'Tamaño partidor', 'TPART') + F(r, 'Partida', 'PARTIDA') + '</div></div>';
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;margin-top:8px;padding-top:8px;border-top:1px solid #E6E0D4">' + F(r, 'Tamaño partidor', 'TPART') + F(r, 'Partida', 'PARTIDA') + '<div class="f"><span>Acceso a tapa</span>' + sino(r.TAPA) + '</div></div></div>';
   var on = [mcc, pdc, hasVdf ? vdf : '', tr, pm].filter(Boolean);
   var K = 0.82, Yk = function (v) { return (v * K).toFixed(1); };
   var svg = '<svg id="plan" class="' + (on.some(function (x) { return box[x]; }) ? 'hl' : '') + '" viewBox="0 0 660 ' + Yk(712) + '" role="img" aria-label="Plano sala eléctrica">';
@@ -947,7 +947,7 @@ function ubic() {
 /* ====== Edición de la ficha ====== */
 var ED = { dirty: {}, sap: [] };
 var SEC_NOM = { 1: ['IDENTIFICACIÓN', '#3B2A1E', '#fff'], 2: ['ELÉCTRICOS', '#EA7600', '#1F1C19'], 3: ['MECÁNICOS', '#696158', '#fff'], 4: ['DIMENSIONES (mm)', '#DFD1A7', '#3B2A1E'], 5: ['CÓDIGOS SAP · MOTOR COMPLETO', '#EA7600', '#1F1C19'] };
-var SPAN = { DESC: 6, MCC: 2, PDC: 2, TPART: 2, PARTIDA: 6, UBI: 6, GSAP: 3, GTER: 3, DCS: 3, SSL: 3, CARPETA: 6, KW: 2, AMP: 2, VOLT: 2, POLOS: 2, FS: 2, AISL: 2, TORQUE: 3, CAJA: 3, MONTAJE: 2, FRAME: 2, PESO: 2, GIRO: 3, TRANS: 3, EQMEC: 6, RODLA: 3, RODLNA: 3 };
+var SPAN = { DESC: 6, MCC: 2, PDC: 2, TPART: 2, TAPA: 6, PARTIDA: 6, UBI: 6, GSAP: 3, GTER: 3, DCS: 3, SSL: 3, CARPETA: 6, KW: 2, AMP: 2, VOLT: 2, POLOS: 2, FS: 2, AISL: 2, TORQUE: 3, CAJA: 3, MONTAJE: 2, FRAME: 2, PESO: 2, GIRO: 3, TRANS: 3, EQMEC: 6, RODLA: 3, RODLNA: 3 };
 function antes(k) { var r = R(); if (r._fuente && r._fuente[k] === 'PAR') return r[k] || ''; return r._derivado[k] ? '' : (r[k] || ''); }
 function abrirEdicion(foco) {
   var r = R(); ED = { dirty: {}, sap: r.SAPLISTA.map(function (x) { return { c: x.c, d: x.d }; }) };
